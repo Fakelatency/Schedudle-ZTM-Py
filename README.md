@@ -1,9 +1,6 @@
 ZTM WARSZAWA SCHEDULE - Program created for showing ZTM schedule for specified stop and line. 
 
-Branches: 
-
-Main: Pick stop -> Pick line -> Show timetable for the line
-Secondary: Pick line -> Pick direction -> Show route -> Pick stop -> Show timetable for that stop
+Usage in secondary branch: Pick line -> Pick direction -> Show route -> Pick stop -> Show timetable for that stop
 
 In order to start: 
 1. Create an account here and get your API KEY: https://api.um.warszawa.pl
