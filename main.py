@@ -3,10 +3,10 @@ import json
 from datetime import datetime
 import requests
 
-# --- Konfiguracja i funkcje pomocnicze ---
 
-API_KEY = os.getenv("API_KEY")
+API_KEY = os.getenv("WARSAW_DATA_API_KEY", "e5b079a2-1f6f-4731-8837-07c42ede6c39")
 BAZA_LINII = 'baza_linii.json'
+
 
 def wczytaj_baze_linii(plik=BAZA_LINII):
     """Wczytuje kompletną bazę linii i przystanków z pliku JSON."""
@@ -17,6 +17,7 @@ def wczytaj_baze_linii(plik=BAZA_LINII):
         print(f"❌ Błąd: Nie znaleziono pliku bazy '{plik}'.")
         print("   Upewnij się, że najpierw uruchomiłeś skrypt 'indeksuj_linie.py'.")
         return None
+
 
 def pobierz_rozkład_bezposrednio(bus_stop_id, bus_stop_nr, line):
     """Pobiera rozkład bezpośrednio z API ZTM."""
@@ -51,17 +52,18 @@ def main():
     all_lines = sorted(line_database.keys())
     print("\n🚍 Dostępne linie komunikacji miejskiej:")
 
-    print(", ".join(all_lines))
-    
+    lines_per_row = 4
+    for i in range(0, len(all_lines), lines_per_row):
+        print("   ".join(all_lines[i:i + lines_per_row]))
+
     chosen_line = input("\nWybierz numer linii: ").upper()
     if chosen_line not in line_database:
         print("❌ Nie znaleziono takiej linii w bazie.")
         return
 
-
     stops_for_line = line_database[chosen_line]
     directions = sorted(list(set(stop['direction'] for stop in stops_for_line if stop['direction'])))
-    
+
     print("\n➡️ Dostępne kierunki dla linii " + chosen_line + ":")
     for i, direction in enumerate(directions):
         print(f"{i + 1}. {direction}")
@@ -75,6 +77,7 @@ def main():
 
 
     route_stops = [stop for stop in stops_for_line if stop['direction'] == chosen_direction]
+
     unique_route_stops = list({f"{stop['id']}-{stop['number']}": stop for stop in route_stops}.values())
 
     print(f"\n📍 Trasa w kierunku '{chosen_direction}':")
@@ -89,13 +92,14 @@ def main():
         return
 
     try:
-        print(f"\nPobieram rozkład dla linii {chosen_line} z przystanku {selected_stop['name']} {selected_stop['number']}...")
+        print(
+            f"\nPobieram rozkład dla linii {chosen_line} z przystanku {selected_stop['name']} {selected_stop['number']}...")
         all_today_departures = pobierz_rozkład_bezposrednio(selected_stop['id'], selected_stop['number'], chosen_line)
-        
+
         if all_today_departures:
             current_date_str = datetime.now().strftime('%A, %d.%m.%Y')
             print(f"\n✅ Odjazdy na dziś ({current_date_str}):")
-            
+
             now = datetime.now().time()
             future_departures = []
             for t in all_today_departures:
@@ -107,14 +111,15 @@ def main():
 
             if future_departures:
                 for i in range(0, len(sorted(future_departures)), 6):
-                    print("   ".join(sorted(future_departures)[i:i+6]))
+                    print("   ".join(sorted(future_departures)[i:i + 6]))
             else:
                 print("Brak dalszych odjazdów w dniu dzisiejszym.")
         else:
             print("Brak odjazdów dla tej linii na tym przystanku w dniu dzisiejszym.")
-            
+
     except Exception as e:
         print(f"❌ Wystąpił nieoczekiwany błąd przy pobieraniu rozkładu: {e}")
+
 
 if __name__ == "__main__":
     main()
