@@ -2,6 +2,8 @@ ZTM WARSZAWA SCHEDULE - Program created for showing ZTM schedule for specified s
 
 Usage in main branch: Pick stop -> Pick line -> Show timetable for the line
 
+IN ORDER TO PICK THE TRAM/BUS LINE FIRST CHANGE THE BRANCH TO SECONDARY AND FOLLOW THE README.
+
 In order to start: 
 1. Create an account here and get your API KEY: https://api.um.warszawa.pl
 2. Create .env in your root dir and paste this line with proper key:  "API_KEY=enter_key_here"
